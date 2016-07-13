@@ -1,0 +1,3 @@
+set(PUGIXML_DIR "")
+set(PUGIXML_HDR "")
+set(PUGIXML_LIB "")
