@@ -5,7 +5,7 @@
 # throughout the whole project. The idea is to have them all
 # listed in this single file, so after editing these paths
 # according to your needs you should be ready to build without
-# touching any other cmake file.
+# touching any other cmake files.
 
 set(PUGIXML_DIR "/usr/local/lib/pugixml-1.7")
 set(PUGIXML_HDR "${PUGIXML_DIR}/src")
