@@ -8,7 +8,11 @@
 
 #include <pugixml.hpp>
 
-#include "XMLProcessingResult.h"
+struct XMLProcessingResult
+{
+    std::string description;
+    std::string output;
+};
 
 class XMLProcessor
 {
@@ -16,7 +20,7 @@ class XMLProcessor
         static const std::string tag_code_inclusion;
         static const std::string attr_path_inclusion;
 
-        bool expand_path(pugi::xml_node&, XMLProcessingResult&);
+        bool fetch_file_content(pugi::xml_node &, XMLProcessingResult &);
 
     public:
         XMLProcessingResult process(const std::string&);

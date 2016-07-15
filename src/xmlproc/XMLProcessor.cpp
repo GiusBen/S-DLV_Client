@@ -7,16 +7,20 @@
 const std::string XMLProcessor::tag_code_inclusion = "eat";
 const std::string XMLProcessor::attr_path_inclusion = "path";
 
-bool XMLProcessor::expand_path(pugi::xml_node& node,
-                               XMLProcessingResult& result)
+bool XMLProcessor::fetch_file_content(pugi::xml_node &node,
+                                      XMLProcessingResult &result)
 {
     pugi::xml_attribute path;
 
+    /* Enter the block if 'node' is a code inclusion tag with
+     * a path inclusion attribute - e.g. <code path="..."/> */
     if(tag_code_inclusion.compare(node.name()) == 0
         && (path = node.attribute(attr_path_inclusion.c_str())))
     {
         std::ifstream ifstream(path.value());
 
+        /* Enter the block if the path specified in
+         * the attribute is successfully reached */
         if(ifstream.is_open())
         {
             std::stringstream buffer;
@@ -25,11 +29,18 @@ bool XMLProcessor::expand_path(pugi::xml_node& node,
             while(std::getline(ifstream, line))
                 buffer << line;
 
+            ifstream.close();
+
+            /* Remove the attribute and add the data as
+             * plain text - e.g. <code path="..."/> becomes
+             * <code>data_1.data_2.</code> */
             node.remove_attribute(path);
             node.text() = buffer.str().c_str();
         }
         else
         {
+            /* Result's description is updated
+             * with the unreachable path */
             result.description += "Couldn't open ";
             result.description += path.value();
 
@@ -37,6 +48,10 @@ bool XMLProcessor::expand_path(pugi::xml_node& node,
         }
     }
 
+    /* True if one of the following holds:
+     * > It wasn't a code inclusion tag
+     * > It was but had no path inclusion attribute
+     * > It was and the attribute held a valid path */
     return true;
 }
 
@@ -65,7 +80,7 @@ XMLProcessingResult XMLProcessor::process(const std::string& input)
     pugi::xml_node node = document.first_child();
 
     // --- Path expansion
-    if(expand_path(node, preprocessingResult))
+    if(fetch_file_content(node, preprocessingResult))
     {
         std::stringstream buffer;
 
