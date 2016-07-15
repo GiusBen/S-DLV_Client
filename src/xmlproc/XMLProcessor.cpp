@@ -8,7 +8,7 @@ const std::string XMLProcessor::tag_code_inclusion = "eat";
 const std::string XMLProcessor::attr_path_inclusion = "path";
 
 bool XMLProcessor::expand_path(pugi::xml_node& node,
-                               XMLPreprocessingResult& result)
+                               XMLProcessingResult& result)
 {
     pugi::xml_attribute path;
 
@@ -44,9 +44,9 @@ bool XMLProcessor::expand_path(pugi::xml_node& node,
 // | PUBLIC |
 // **********
 
-XMLPreprocessingResult XMLProcessor::process(const std::string& input)
+XMLProcessingResult XMLProcessor::process(const std::string& input)
 {
-    XMLPreprocessingResult preprocessingResult;
+    XMLProcessingResult preprocessingResult;
 
     pugi::xml_document document;
     pugi::xml_parse_result result;

@@ -16,10 +16,10 @@ class XMLProcessor
         static const std::string tag_code_inclusion;
         static const std::string attr_path_inclusion;
 
-        bool expand_path(pugi::xml_node&, XMLPreprocessingResult&);
+        bool expand_path(pugi::xml_node&, XMLProcessingResult&);
 
     public:
-        XMLPreprocessingResult process(const std::string&);
+        XMLProcessingResult process(const std::string&);
 };
 
 #endif // S_DLV_CLIENT_XMLPREPROCESSOR_H
