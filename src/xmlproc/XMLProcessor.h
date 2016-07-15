@@ -1,5 +1,5 @@
-#ifndef S_DLV_CLIENT_XMLPREPROCESSOR_H
-#define S_DLV_CLIENT_XMLPREPROCESSOR_H
+#ifndef S_DLV_CLIENT_XMLPROCESSOR_H
+#define S_DLV_CLIENT_XMLPROCESSOR_H
 
 #include <iostream>
 #include <fstream>
@@ -26,4 +26,4 @@ class XMLProcessor
         XMLProcessingResult process(const std::string&);
 };
 
-#endif // S_DLV_CLIENT_XMLPREPROCESSOR_H
+#endif // S_DLV_CLIENT_XMLPROCESSOR_H
