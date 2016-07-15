@@ -6,7 +6,15 @@
 # listed in this single file, so after editing these paths
 # according to your needs you should be ready to build without
 # touching any other cmake files.
+# Hopefully.
 
-set(PUGIXML_DIR "/usr/local/lib/pugixml-1.7")
-set(PUGIXML_HDR "${PUGIXML_DIR}/src")
-set(PUGIXML_LIB "${PUGIXML_DIR}/lib/libpugixml_1_7.a")
+# pugixml 1.7 root library
+set(PUGIXML_DIR "")
+
+# pugixml 1.7 header files directory (e.g. "${PUGIXML_DIR}/src")
+set(PUGIXML_HDR "")
+
+# pugixml 1.7 library - you can either build it yourself and
+# link against it (e.g. "${PUGIXML_DIR}/lib/libpugixml.a") or
+# simply compile pugi's header files along with your sources
+set(PUGIXML_LIB "")

@@ -8,9 +8,9 @@
 
 #include <pugixml.hpp>
 
-#include "XMLPreprocessingResult.h"
+#include "XMLProcessingResult.h"
 
-class XMLPreprocessor
+class XMLProcessor
 {
     private:
         static const std::string tag_code_inclusion;

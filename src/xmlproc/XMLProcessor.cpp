@@ -1,14 +1,14 @@
-#include "XMLPreprocessor.h"
+#include "XMLProcessor.h"
 
 // ***********
 // | PRIVATE |
 // ***********
 
-const std::string XMLPreprocessor::tag_code_inclusion = "eat";
-const std::string XMLPreprocessor::attr_path_inclusion = "path";
+const std::string XMLProcessor::tag_code_inclusion = "eat";
+const std::string XMLProcessor::attr_path_inclusion = "path";
 
-bool XMLPreprocessor::expand_path(pugi::xml_node& node,
-                                  XMLPreprocessingResult& result)
+bool XMLProcessor::expand_path(pugi::xml_node& node,
+                               XMLPreprocessingResult& result)
 {
     pugi::xml_attribute path;
 
@@ -27,8 +27,6 @@ bool XMLPreprocessor::expand_path(pugi::xml_node& node,
 
             node.remove_attribute(path);
             node.text() = buffer.str().c_str();
-
-            std::cout << "Buffer: " << buffer.str() << std::endl;
         }
         else
         {
@@ -46,7 +44,7 @@ bool XMLPreprocessor::expand_path(pugi::xml_node& node,
 // | PUBLIC |
 // **********
 
-XMLPreprocessingResult XMLPreprocessor::process(const std::string& input)
+XMLPreprocessingResult XMLProcessor::process(const std::string& input)
 {
     XMLPreprocessingResult preprocessingResult;
 
