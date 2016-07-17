@@ -4,8 +4,8 @@
 // | PRIVATE |
 // ***********
 
-const std::string XMLProcessor::tag_code_inclusion = "eat";
-const std::string XMLProcessor::attr_path_inclusion = "path";
+const char * XMLProcessor::TAG_CODE_INCLUSION = "eat";
+const char * XMLProcessor::ATTR_PATH_INCLUSION = "path";
 
 bool XMLProcessor::fetch_file_content(pugi::xml_node & node,
                                       XMLProcessingResult & result)
@@ -14,8 +14,8 @@ bool XMLProcessor::fetch_file_content(pugi::xml_node & node,
 
     /* Enter the block if 'node' is a code inclusion tag with
      * a path inclusion attribute - e.g. <code path="..."/> */
-    if(tag_code_inclusion.compare(node.name()) == 0
-        && (path = node.attribute(attr_path_inclusion.c_str())))
+    if(strcmp(node.name(), TAG_CODE_INCLUSION) == 0
+        && (path = node.attribute(ATTR_PATH_INCLUSION)))
     {
         std::ifstream ifstream(path.value());
 
