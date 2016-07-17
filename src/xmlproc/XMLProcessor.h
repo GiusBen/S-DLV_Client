@@ -23,7 +23,7 @@ class XMLProcessor
         bool fetch_file_content(pugi::xml_node &, XMLProcessingResult &);
 
     public:
-        XMLProcessingResult process(const std::string&);
+        XMLProcessingResult process(const std::string &);
 };
 
 #endif // S_DLV_CLIENT_XMLPROCESSOR_H

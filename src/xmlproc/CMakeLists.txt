@@ -1,4 +1,9 @@
-add_library(xmlprocessor "XMLProcessor.cpp")
+set(PUGIXML_HDR "${PUGIXML_DIR}/src")
+
+add_library(xmlprocessor
+        "XMLProcessor.cpp"
+        "${PUGIXML_HDR}/pugixml.cpp")
 
 target_include_directories(xmlprocessor PUBLIC ${PUGIXML_HDR})
+
 target_link_libraries(xmlprocessor ${PUGIXML_LIB})
