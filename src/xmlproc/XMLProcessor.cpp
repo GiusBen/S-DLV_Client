@@ -41,7 +41,7 @@ bool XMLProcessor::fetch_file_content(pugi::xml_node & node,
         {
             /* Result's description is updated
              * with the unreachable path */
-            result.description += "Couldn't open ";
+            result.description += "Couldn't open: ";
             result.description += path.value();
 
             return false;
@@ -66,25 +66,27 @@ XMLProcessingResult XMLProcessor::process(const std::string & input)
     pugi::xml_document document;
     pugi::xml_parse_result result;
 
-    // --- XML Parsing
+    /* Parse the string. On failure, update the XMLProcessingResult
+     * instance and return it. */
     if(!(result = document.load_string(input.c_str())))
     {
         preprocessingResult.description = result.description();
-
         return preprocessingResult;
     }
 
-    // --- XML Validation
-    // TODO
+    /* Parsing successful. */
 
     pugi::xml_node node = document.first_child();
 
-    // --- Path expansion
+    /* Resolve the paths. Failure is handled by the fetch_file_content
+     * function itself; on success, update the XMLProcessingResult instance. */
     if(fetch_file_content(node, preprocessingResult))
     {
         std::stringstream buffer;
 
         document.save(buffer);
+
+        preprocessingResult.description = "OK";
         preprocessingResult.output = buffer.str();
     }
 

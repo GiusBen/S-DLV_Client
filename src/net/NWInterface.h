@@ -3,6 +3,7 @@
 
 #include <sstream>
 #include <string>
+#include <stdexcept>
 
 #include <dlib/iosockstream.h>
 
@@ -14,9 +15,15 @@ class NWInterface
 
         dlib::iosockstream iosockstream;
 
+        bool initialized;
+
     public:
-        bool start(const std::string &, const unsigned short);
-        const char * push(const std::string &);
+        NWInterface();
+
+        bool init(const std::string &, const unsigned short);
+        void quit();
+
+        std::string push(const std::string &);
 };
 
 #endif // S_DLV_CLIENT_NWINTERFACE_H

@@ -11,33 +11,43 @@ const char NWInterface::EOM = '\0';
 // * PUBLIC *
 // **********
 
-bool NWInterface::start(const std::string & address, const unsigned short port)
+NWInterface::NWInterface() : initialized(false) { }
+
+bool NWInterface::init(const std::string & address, const unsigned short port)
 {
-    /* Close iosockstream gracefully if already open */
-    iosockstream.close(DEFAULT_TIMEOUT);
+    dlib::network_address socket(address, port);
 
-    dlib::network_address full_address(address, port);
+    if(!initialized)
+        try
+        {
+            iosockstream.open(socket, DEFAULT_TIMEOUT);
+            initialized = true;
+            return true;
+        }
+        catch(std::exception & exception)
+        {
+            std::stringstream error_message;
 
-    try
-    {
-        iosockstream.open(full_address, DEFAULT_TIMEOUT);
-    }
-    catch(std::exception & exception)
-    {
-        std::cerr << "Couldn't reach server at "
-                  << address << ":" << port
-                  << std::endl;
+            error_message << "Couldn't reach server at "
+                          << "'" << address << ":" << port << "'"
+                          << std::endl;
 
-        return false;
-    }
+            throw std::runtime_error(error_message.str());
+        }
 
-    return true;
+    return false;
 }
 
-const char * NWInterface::push(const std::string & msg)
+void NWInterface::quit()
+{
+    iosockstream.close(DEFAULT_TIMEOUT);
+}
+
+std::string NWInterface::push(const std::string & msg)
 {
     if(!iosockstream.good())
-        return NULL;
+        throw std::runtime_error
+                ("Can't push message onto a closed connection.");
 
     std::string reply;
 
@@ -45,5 +55,5 @@ const char * NWInterface::push(const std::string & msg)
 
     std::getline(iosockstream, reply, EOM);
 
-    return reply.c_str();
+    return reply;
 }
