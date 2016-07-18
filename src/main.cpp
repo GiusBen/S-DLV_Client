@@ -4,7 +4,7 @@ int main(int argc, char * * argv)
 {
     // TODO: parse options
 
-    SDLVC_CLI::prompt_loop("localhost", 4790);
+    SDLVC_CLI::prompt_loop();
 
     return 0;
 }

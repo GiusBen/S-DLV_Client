@@ -9,8 +9,8 @@
 
 namespace SDLVC_CLI
 {
-    void prompt_loop(const std::string & address,
-                     const unsigned short port)
+    void prompt_loop(const std::string & address = "localhost",
+                     const unsigned short port = 4790)
     {
         NWInterface nwInterface;
 
@@ -70,8 +70,8 @@ namespace SDLVC_CLI
                     catch(std::exception & exception)
                     {
                         std::cout << "! [NETWORK ERROR] : "
-                        << exception.what()
-                        << std::endl;
+                                  << exception.what()
+                                  << std::endl;
                     }
                 else
                     std::cout << std::endl
