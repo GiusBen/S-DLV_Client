@@ -7,7 +7,7 @@
 #include <string>
 #include <cstring>
 
-#include <pugixml.hpp>
+#include "pugixml.hpp"
 
 struct XMLProcessingResult
 {
@@ -19,9 +19,11 @@ class XMLProcessor
 {
     private:
         static const char * TAG_CODE_INCLUSION;
-        static const char * ATTR_PATH_INCLUSION;
 
-        bool fetch_file_content(pugi::xml_node &, XMLProcessingResult &);
+        static const char * ATTR_PATH_INCLUSION;
+        static const char * ATTR_HANDLE_DEFINITION;
+
+        bool process_node(pugi::xml_node &, XMLProcessingResult &);
 
     public:
         XMLProcessingResult process(const std::string &);

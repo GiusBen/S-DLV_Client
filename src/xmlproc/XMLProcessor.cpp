@@ -5,54 +5,87 @@
 // ***********
 
 const char * XMLProcessor::TAG_CODE_INCLUSION = "eat";
+
 const char * XMLProcessor::ATTR_PATH_INCLUSION = "path";
+const char * XMLProcessor::ATTR_HANDLE_DEFINITION = "handle";
 
-bool XMLProcessor::fetch_file_content(pugi::xml_node & node,
-                                      XMLProcessingResult & result)
+bool XMLProcessor::process_node(pugi::xml_node & node,
+                                XMLProcessingResult & result)
 {
-    pugi::xml_attribute path;
+    // # TAG_CODE_INCLUSION
 
-    /* Enter the block if 'node' is a code inclusion tag with
-     * a path inclusion attribute - e.g. <code path="..."/> */
-    if(strcmp(node.name(), TAG_CODE_INCLUSION) == 0
-        && (path = node.attribute(ATTR_PATH_INCLUSION)))
+    if(strcmp(node.name(), TAG_CODE_INCLUSION) == 0)
     {
-        std::ifstream ifstream(path.value());
-
-        /* Enter the block if the path specified in
-         * the attribute is successfully reached */
-        if(ifstream.is_open())
+        /* Before moving on, make sure the code inclusion tag
+         * has a (proper) handle attribute. */
+        if(!node.attribute(ATTR_HANDLE_DEFINITION))
         {
-            std::stringstream buffer;
-            std::string line;
-
-            while(std::getline(ifstream, line))
-                buffer << line;
-
-            ifstream.close();
-
-            /* Remove the attribute and add the data as
-             * plain text - e.g. <code path="..."/> becomes
-             * <code>data_1.data_2.</code> */
-            node.remove_attribute(path);
-            node.text() = buffer.str().c_str();
-        }
-        else
-        {
-            /* Result's description is updated
-             * with the unreachable path */
-            result.description += "Couldn't open: ";
-            result.description += path.value();
+            result.description += "Code inclusion tag has no handle attribute.";
 
             return false;
         }
+
+        if(strcmp(node.attribute(ATTR_HANDLE_DEFINITION).value(), "") == 0)
+        {
+            result.description += "Empty handle for code inclusion tag.";
+
+            return false;
+        }
+
+        /* Handle ok, proceed with path processing. */
+        pugi::xml_attribute path;
+
+        if(path = node.attribute(ATTR_PATH_INCLUSION))
+        {
+            std::ifstream ifstream(path.value());
+
+            /* Enter the block if the path specified in
+             * the attribute is successfully reached */
+            if(ifstream.is_open())
+            {
+                std::stringstream buffer;
+                std::string line;
+
+                /* Plain data might already be present;
+                 * if so it gets prepended. */
+                buffer << node.text().get();
+
+                while(std::getline(ifstream, line))
+                    buffer << line;
+
+                ifstream.close();
+
+                /* Remove the attribute and add the data as
+                 * plain text - e.g. <code path="..."/> becomes
+                 * <code>data_1.data_2.</code> */
+                node.remove_attribute(path);
+                node.text() = buffer.str().c_str();
+            }
+            else
+            {
+                /* Result's description is updated
+                 * with the unreachable path */
+                result.description += "Couldn't open: ";
+                result.description += path.value();
+
+                return false;
+            }
+        }
+        // FIXME: As of now, a string made of only spaces would pass the test
+        else if(strcmp(node.text().get(), "") == 0)
+        {
+            result.description = "Code inclusion tag has no path nor plain text data.";
+
+            return false;
+        }
+
+        return true;
     }
 
-    /* True if one of the following holds:
-     * > It wasn't a code inclusion tag
-     * > It was but had no path inclusion attribute
-     * > It was and the attribute held a valid path */
-    return true;
+    /* No 'if' block entered. */
+    result.description += "Bad tag.";
+
+    return false;
 }
 
 // **********
@@ -71,16 +104,19 @@ XMLProcessingResult XMLProcessor::process(const std::string & input)
     if(!(result = document.load_string(input.c_str())))
     {
         preprocessingResult.description = result.description();
+
         return preprocessingResult;
     }
 
     /* Parsing successful. */
 
+	/* Only the first tag is processed (and sent). Every trailing tag
+     * is ignored, so you basically have to send it separately. */
     pugi::xml_node node = document.first_child();
 
-    /* Resolve the paths. Failure is handled by the fetch_file_content
+    /* Process the node (e.g. resolve paths). Failure is handled by the process_node
      * function itself; on success, update the XMLProcessingResult instance. */
-    if(fetch_file_content(node, preprocessingResult))
+    if(process_node(node, preprocessingResult))
     {
         std::stringstream buffer;
 
