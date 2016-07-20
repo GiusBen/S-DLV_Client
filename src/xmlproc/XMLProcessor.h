@@ -13,8 +13,19 @@ struct XMLProcessingResult
 {
     bool error = false;
     
-    std::string report;
-    std::string output;
+    std::string report = "NONE";
+    std::string output = "NONE";
+
+    std::string to_string()
+    {
+        std::stringstream buffer;
+
+        buffer << "Error: " << error << std::endl
+               << "Report: " << report << std::endl
+               << "Output: " << output << std::endl;
+
+        return buffer.str();
+    }
 };
 
 class XMLProcessor
@@ -23,7 +34,7 @@ class XMLProcessor
         static const char * TAG_CODE_INCLUSION;
         static const char * ATTR_PATH_INCLUSION;
 
-        bool fetch_file_content(pugi::xml_node &, XMLProcessingResult &);
+        XMLProcessingResult fetch_file_content(pugi::xml_node &);
 
     public:
         XMLProcessingResult process(const std::string &);

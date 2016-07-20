@@ -7,10 +7,11 @@
 const char * XMLProcessor::TAG_CODE_INCLUSION = "eat";
 const char * XMLProcessor::ATTR_PATH_INCLUSION = "path";
 
-bool XMLProcessor::fetch_file_content(pugi::xml_node & node,
-                                      XMLProcessingResult & result)
+XMLProcessingResult XMLProcessor::fetch_file_content(pugi::xml_node & node)
 {
+    XMLProcessingResult result;
     pugi::xml_attribute path;
+    std::stringstream buffer;
 
     /* Enter the block if 'node' is a code inclusion tag with
      * a path inclusion attribute - e.g. <code path="..."/> */
@@ -23,7 +24,6 @@ bool XMLProcessor::fetch_file_content(pugi::xml_node & node,
          * the attribute is successfully reached */
         if(ifstream.is_open())
         {
-            std::stringstream buffer;
             std::string line;
 
             /* Node might have some plain text data; if so,
@@ -49,14 +49,24 @@ bool XMLProcessor::fetch_file_content(pugi::xml_node & node,
 
             result.report += "Couldn't open: ";
             result.report += path.value();
+
+            return result;
         }
     }
 
-    /* Return true if one of the following holds:
-     * > It wasn't a code inclusion tag
-     * > It was but had no path inclusion attribute
-     * > It was and the attribute held a valid path */
-    return !result.error;
+    /* At this point one of the following holds:
+     * - It wasn't a code inclusion tag.
+     * - It was, but had no path inclusion attribute.
+     * - It was and its path inclusion attribute was successfully processed.
+     * Before returning, node is stored as a string into result's output field. */
+    buffer.str(std::string());
+    buffer.clear();
+
+    node.print(buffer);
+
+    result.output = buffer.str();
+
+    return result;
 }
 
 // **********
@@ -65,37 +75,24 @@ bool XMLProcessor::fetch_file_content(pugi::xml_node & node,
 
 XMLProcessingResult XMLProcessor::process(const std::string & input)
 {
-    XMLProcessingResult preprocessingResult;
-
     pugi::xml_document document;
-    pugi::xml_parse_result result;
+    pugi::xml_parse_result parse_result;
 
-    /* Parse the string. On failure, update the XMLProcessingResult
-     * instance and return it. */
-    if(!(result = document.load_string(input.c_str())))
+    /* Parse the string, returning on failure. */
+    if(!(parse_result = document.load_string(input.c_str())))
     {
-        preprocessingResult.error = true;
-        preprocessingResult.report = result.description();
+        XMLProcessingResult result;
 
-        return preprocessingResult;
+        result.error = true;
+        result.report = parse_result.description();
+
+        return result;
     }
 
     /* As of now, only the first tag is examined and every
      * trailing tags are discarded. */
     pugi::xml_node node = document.first_child();
 
-    /* Resolve the paths if there are any. Failure is handled by
-     * the fetch_file_content function itself; on success, update
-     * the XMLProcessingResult instance. */
-    if(fetch_file_content(node, preprocessingResult))
-    {
-        std::stringstream buffer;
-
-        document.save(buffer);
-
-        preprocessingResult.report = "OK";
-        preprocessingResult.output = buffer.str();
-    }
-
-    return preprocessingResult;
+    /* Look for paths to process. */
+    return fetch_file_content(node);
 }
