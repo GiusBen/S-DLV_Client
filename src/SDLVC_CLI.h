@@ -56,7 +56,7 @@ namespace SDLVC_CLI
                  * errors and paths to resolve. */
                 result = xmlProcessor.process(tmp_buffer);
 
-                if(result.description == "OK")
+                if(!result.error)
                     try
                     {
                         /* Send the message to the server. If everything's
@@ -76,7 +76,7 @@ namespace SDLVC_CLI
                 else
                     std::cout << std::endl
                               << "! [XML PROCESSING ERROR]" << std::endl
-                              << result.description << std::endl;
+                              << result.report << std::endl;
             }
         }
         while(!exit_requested);
