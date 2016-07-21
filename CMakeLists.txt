@@ -7,7 +7,7 @@ set(PUGIXML_DIR "")
 # dlib 19.0 root directory
 set(DLIB_DIR "")
 
-# CXX flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+# CXX
+set(CMAKE_CXX_STANDARD 11)
 
 add_subdirectory("src")
