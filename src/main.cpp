@@ -1,10 +1,9 @@
-#include "SDLVC_CLI.h"
+#include "tester/Tester.h"
 
 int main(int argc, char * * argv)
 {
-    // TODO: parse options
-
-    SDLVC_CLI::prompt_loop();
+    Tester tester;
+    tester.run(argc, argv);
 
     return 0;
 }

@@ -1,6 +1,9 @@
 #ifndef S_DLV_CLIENT_SDLVC_CLI_H
 #define S_DLV_CLIENT_SDLVC_CLI_H
 
+#define DEFAULT_ADDRESS "localhost"
+#define DEFAULT_PORT 4790
+
 #include <iostream>
 #include <string>
 
@@ -9,8 +12,8 @@
 
 namespace SDLVC_CLI
 {
-    void prompt_loop(const std::string & address = "localhost",
-                     const unsigned short port = 4790)
+    void prompt_loop(const std::string & address = DEFAULT_ADDRESS,
+                     const unsigned short port = DEFAULT_PORT)
     {
         NWInterface nwInterface;
 

@@ -1,6 +1,9 @@
 #ifndef S_DLV_CLIENT_XMLPROCESSOR_H
 #define S_DLV_CLIENT_XMLPROCESSOR_H
 
+#define TAG_CODE_INCLUSION "put"
+#define TAG_LOCAL_PATH_INCLUSION "lput"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -31,10 +34,7 @@ struct XMLProcessingResult
 class XMLProcessor
 {
     private:
-        static const char * TAG_CODE_INCLUSION;
-        static const char * ATTR_PATH_INCLUSION;
-
-        XMLProcessingResult fetch_file_content(pugi::xml_node &);
+        XMLProcessingResult process_node(pugi::xml_node &);
 
     public:
         XMLProcessingResult process(const std::string &);

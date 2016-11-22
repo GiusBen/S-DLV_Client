@@ -1,45 +1,39 @@
 #include "XMLProcessor.h"
 
 // ***********
-// | PRIVATE |
+// * PRIVATE *
 // ***********
 
-const char * XMLProcessor::TAG_CODE_INCLUSION = "eat";
-const char * XMLProcessor::ATTR_PATH_INCLUSION = "path";
-
-XMLProcessingResult XMLProcessor::fetch_file_content(pugi::xml_node & node)
+XMLProcessingResult XMLProcessor::process_node(pugi::xml_node & node)
 {
     XMLProcessingResult result;
-    pugi::xml_attribute path;
     std::stringstream buffer;
 
-    /* Enter the block if 'node' is a code inclusion tag with
-     * a path inclusion attribute - e.g. <code path="..."/> */
-    if(strcmp(node.name(), TAG_CODE_INCLUSION) == 0
-        && (path = node.attribute(ATTR_PATH_INCLUSION)))
+    /* Enter this block if it's a tag requesting code inclusion
+     * from a local file.
+     */
+    if(strcmp(node.name(), TAG_LOCAL_PATH_INCLUSION) == 0)
     {
-        std::ifstream ifstream(path.value());
+        const char * path = node.text().get();
+        std::ifstream ifstream(path);
 
         /* Enter the block if the path specified in
-         * the attribute is successfully reached */
+         * pcdata is successfully reached */
         if(ifstream.is_open())
         {
             std::string line;
-
-            /* Node might have some plain text data; if so,
-             * it gets prepended to the file's content. */
-            buffer << node.text().get();
 
             while(std::getline(ifstream, line))
                 buffer << line;
 
             ifstream.close();
 
-            /* Remove the attribute and add the data as
-             * plain text - e.g. <code path="..."/> becomes
-             * <code>data_1.data_2.</code>. */
-            node.remove_attribute(path);
+            /* Add the data fetched from local path
+             * as plain text and replace the tag's name
+             * with the one expected server side.
+             */
             node.text() = buffer.str().c_str();
+            node.set_name(TAG_CODE_INCLUSION);
         }
         else
         {
@@ -48,17 +42,13 @@ XMLProcessingResult XMLProcessor::fetch_file_content(pugi::xml_node & node)
             result.error = true;
 
             result.report += "Couldn't open: ";
-            result.report += path.value();
+            result.report += path;
 
             return result;
         }
     }
 
-    /* At this point one of the following holds:
-     * - It wasn't a code inclusion tag.
-     * - It was, but had no path inclusion attribute.
-     * - It was and its path inclusion attribute was successfully processed.
-     * Before returning, node is stored as a string into result's output field. */
+    /* Before returning, node is stored as a string into result's output field. */
     buffer.str(std::string());
     buffer.clear();
 
@@ -70,7 +60,7 @@ XMLProcessingResult XMLProcessor::fetch_file_content(pugi::xml_node & node)
 }
 
 // **********
-// | PUBLIC |
+// * PUBLIC *
 // **********
 
 XMLProcessingResult XMLProcessor::process(const std::string & input)
@@ -94,5 +84,5 @@ XMLProcessingResult XMLProcessor::process(const std::string & input)
     pugi::xml_node node = document.first_child();
 
     /* Look for paths to process. */
-    return fetch_file_content(node);
+    return process_node(node);
 }

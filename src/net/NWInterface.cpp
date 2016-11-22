@@ -1,12 +1,5 @@
 #include "NWInterface.h"
 
-// ***********
-// * PRIVATE *
-// ***********
-
-const unsigned long NWInterface::DEFAULT_TIMEOUT = 5000;
-const char NWInterface::EOM = '\0';
-
 // **********
 // * PUBLIC *
 // **********

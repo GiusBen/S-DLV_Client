@@ -1,6 +1,9 @@
 #ifndef S_DLV_CLIENT_NWINTERFACE_H
 #define S_DLV_CLIENT_NWINTERFACE_H
 
+#define DEFAULT_TIMEOUT 5000
+#define EOM '\0'
+
 #include <sstream>
 #include <string>
 #include <stdexcept>
@@ -10,9 +13,6 @@
 class NWInterface
 {
     private:
-        static const unsigned long DEFAULT_TIMEOUT;
-        static const char EOM;
-
         dlib::iosockstream iosockstream;
 
         bool initialized;
